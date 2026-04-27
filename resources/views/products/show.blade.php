@@ -32,7 +32,7 @@
                         <li class="breadcrumb-item">
                             <a href="{{ route('categories.show', $product->category->slug) }}"
                                 class="text-decoration-none">
-                                {{ $category->name }}
+                                {{ $product->category->name }}
                             </a>
                         </li>
                         <li class="breadcrumb-item active" aria-current="page">{{ $product->name }}</li>
@@ -44,7 +44,7 @@
                 <p class="text-muted small mb-3">
                     Category:
                     <a href="{{ route('categories.show', $product->category->slug) }}" class="text-decoration-none">
-                        {{ $category->name }}
+                        {{ $product->category->name }}
                     </a>
                 </p>
 

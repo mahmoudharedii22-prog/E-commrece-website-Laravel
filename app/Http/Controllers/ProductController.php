@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\Product;
@@ -9,10 +8,10 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Product::with('category');
+        $query = Product::with('category'); // ✅ eager loading
 
         $query->when($request->search, function ($q, $search) {
-            $q->where('name', 'like', '%'.$search.'%');
+            $q->where('name', 'like', '%' . $search . '%');
         });
 
         $products = $query->latest()->paginate(12);
@@ -22,7 +21,7 @@ class ProductController extends Controller
 
     public function show(Product $product)
     {
-        $product->load('category');
+        $product->load('category'); // ✅ eager load product relation
 
         $relatedProducts = Product::with('category')
             ->where('category_id', $product->category_id)
