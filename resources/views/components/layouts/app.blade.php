@@ -145,6 +145,10 @@
                         <a class="nav-link {{ request()->routeIs('products.*') ? 'active fw-semibold' : '' }}"
                             href="{{ route('products.index') }}">Products</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('orders.*') ? 'active fw-semibold' : '' }}"
+                            href="{{ route('orders.index') }}">Orders</a>
+                    </li>
 
                     {{-- Cart --}}
                     <li class="nav-item ms-1">

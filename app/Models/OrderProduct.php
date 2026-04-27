@@ -10,13 +10,14 @@ class OrderProduct extends Model
 
     protected $guarded = [];
 
-    public function order()
-    {
-        return $this->belongsTo(Order::class);
-    }
-
+    // دا جدول مستقل بذاته عشان نحسب الاسناب شوتس بتاعت البرودكت وقت الشراء
     public function product()
     {
         return $this->belongsTo(Product::class);
+    }
+
+    public function order()
+    {
+        return $this->belongsTo(Order::class);
     }
 }

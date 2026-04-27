@@ -22,10 +22,15 @@ class CreateOrderRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'address_id' => 'required|exists:addresses,id',
-            'payment_method' => 'required',
-            'notes' => 'nullable|string|max:255',
-
+            'address_id' => ['required', 'exists:addresses,id'],
+            'payment_method' => ['required', 'in:cod,card'],
+            'notes' => ['nullable', 'string', 'max:1000'],
+            'cart_items' => ['required', 'array', 'min:1'],
+            'cart_items.*.product_id' => ['required', 'exists:products,id'],
+            'cart_items.*.quantity' => ['required', 'integer', 'min:1', 'max:100'],
         ];
+
+
     }
 }
+    

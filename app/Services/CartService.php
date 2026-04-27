@@ -4,13 +4,11 @@ namespace App\Services;
 
 use App\Models\Cart;
 use App\Models\Product;
-use Illuminate\Support\Facades\Auth;
 
 class CartService
 {
-    public function addToCart(array $data, Product $product)
+    public function addToCart(array $data, Product $product, $userId )
     {
-        $userId = Auth::id();
         $qty = $data['quantity'];
         $cartItem = Cart::where('user_id', $userId)
             ->where('product_id', $product->id)
@@ -35,17 +33,22 @@ class CartService
         return Cart::with('product')->where('user_id', $userId)->get();
     }
 
-    public function removeFromCart($userId, Cart $cart): void
+    public function removeFromCart(Cart $cart): void
     {
         $cart->delete();
     }
 
-    public function update(array $data, Cart $cart)
-    {
 
+    public function update( array $data, Cart $cart): void
+    {
         $qty = $data['quantity'];
 
-        $cart->quantity = $qty;
-        $cart->save();
+        if ($cart->product->stock < $qty) {
+            throw new \Exception('Not enough stock for this product');
+        }
+
+        $cart->update([
+            'quantity' => $qty,
+        ]);
     }
 }

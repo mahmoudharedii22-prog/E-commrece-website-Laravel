@@ -23,7 +23,7 @@ class CartController extends Controller
 
     public function addToCart(AddToCartRequest $request, Product $product)
     {
-        $this->service->addToCart($request->validated(), $product);
+        $this->service->addToCart($request->validated(), $product, Auth::id());
 
         return redirect()->route('products.show', $product)->with('success', 'Product added to cart');
     }
@@ -39,7 +39,7 @@ class CartController extends Controller
     public function removeFromCart(Cart $cart)
     {
         $this->authorize('delete', $cart);
-        $this->service->removeFromCart(Auth::id(), $cart);
+        $this->service->removeFromCart($cart);
 
         return redirect()->route('cart.index')->with('success', 'Product removed from cart');
     }

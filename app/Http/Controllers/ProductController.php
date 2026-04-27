@@ -9,10 +9,10 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Product::query();
+        $query = Product::with('category');
 
-        $query->when($request['search'], function ($q) use ($request) {
-            $q->where('name', 'like', '%'.$request['search'].'%');
+        $query->when($request->search, function ($q, $search) {
+            $q->where('name', 'like', '%'.$search.'%');
         });
 
         $products = $query->latest()->paginate(12);
@@ -22,9 +22,15 @@ class ProductController extends Controller
 
     public function show(Product $product)
     {
-        $category = $product->category;
-        $relatedProducts = $category->products()->where('id', '!=', $product->id)->take(4)->get();
+        $product->load('category');
 
-        return view('products.show', compact('category', 'product', 'relatedProducts'));
+        $relatedProducts = Product::with('category')
+            ->where('category_id', $product->category_id)
+            ->where('id', '!=', $product->id)
+            ->latest()
+            ->take(4)
+            ->get();
+
+        return view('products.show', compact('product', 'relatedProducts'));
     }
 }

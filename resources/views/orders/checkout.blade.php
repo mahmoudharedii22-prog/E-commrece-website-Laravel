@@ -2,21 +2,21 @@
 
     <div class="container py-5">
 
-        {{-- Page Header --}}
+        {{-- Header --}}
         <div class="text-center mb-5">
             <h3 class="fw-bold mb-1">Checkout</h3>
             <p class="text-muted small">Review your order and complete your purchase</p>
         </div>
 
-        <div class="row g-4 align-items-start">
+        <div class="row g-4">
 
-            {{-- ── Left: Form ── --}}
+            {{-- LEFT: FORM --}}
             <div class="col-lg-7">
 
                 <form method="POST" action="{{ route('orders.store') }}">
                     @csrf
 
-                    {{-- Shipping Address --}}
+                    {{-- Addresses --}}
                     <div class="card border-0 shadow-sm mb-4">
                         <div class="card-body p-4">
 
@@ -25,155 +25,159 @@
                             </h5>
 
                             @forelse ($addresses as $address)
-                                <div
-                                    class="address-option border rounded-3 p-3 mb-2
-                                    {{ $address->is_default ? 'border-primary' : '' }}">
+                                <label
+                                    class="address-option border rounded-3 p-3 mb-2 w-100 d-block
+                                {{ $address->is_default ? 'border-primary bg-light' : '' }}">
 
                                     <div class="form-check">
+
                                         <input class="form-check-input" type="radio" name="address_id"
-                                            id="address{{ $address->id }}" value="{{ $address->id }}"
-                                            {{ $address->is_default ? 'checked' : '' }}>
+                                            value="{{ $address->id }}" {{ $address->is_default ? 'checked' : '' }}>
 
-                                        <label class="form-check-label w-100" for="address{{ $address->id }}">
+                                        <div class="ms-2">
 
-                                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                            <div class="d-flex justify-content-between">
                                                 <strong>{{ $address->country }}, {{ $address->city }}</strong>
+
                                                 @if ($address->is_default)
-                                                    <span
-                                                        class="badge bg-success-subtle text-success border border-success-subtle">
-                                                        Default
-                                                    </span>
+                                                    <span class="badge bg-success">Default</span>
                                                 @endif
                                             </div>
 
-                                            <div class="text-muted small">
-                                                <i class="bi bi-signpost me-1"></i>{{ $address->street }}
-                                            </div>
+                                            <small class="text-muted d-block">
+                                                {{ $address->street }}
+                                            </small>
 
                                             @if ($address->phone)
-                                                <div class="text-muted small mt-1">
-                                                    <i class="bi bi-telephone me-1"></i>{{ $address->phone }}
-                                                </div>
+                                                <small class="text-muted">
+                                                    {{ $address->phone }}
+                                                </small>
                                             @endif
 
-                                        </label>
+                                        </div>
+
                                     </div>
-                                </div>
+
+                                </label>
+
                             @empty
-                                <div class="text-center py-4">
-                                    <i class="bi bi-geo text-muted fs-2 d-block mb-2"></i>
-                                    <p class="text-muted mb-2">No addresses found.</p>
-                                    <a href="{{ route('profile.show') }}" class="btn btn-outline-primary btn-sm">
-                                        <i class="bi bi-plus me-1"></i>Add Address
-                                    </a>
+                                <div class="alert alert-warning">
+                                    No addresses found. Please add one.
                                 </div>
                             @endforelse
 
                         </div>
                     </div>
 
-                    {{-- Payment & Notes --}}
+                    {{-- Payment --}}
                     <div class="card border-0 shadow-sm mb-4">
                         <div class="card-body p-4">
 
                             <h5 class="fw-semibold mb-3">
-                                <i class="bi bi-credit-card me-2 text-primary"></i>Payment & Notes
+                                <i class="bi bi-credit-card me-2 text-primary"></i>Payment
                             </h5>
 
-                            <div class="mb-3">
-                                <label for="payment_method" class="form-label fw-semibold small">Payment Method</label>
-                                <select id="payment_method" name="payment_method" class="form-select">
-                                    <option value="cod">💵 Cash on Delivery</option>
-                                    <option value="card">💳 Credit Card</option>
-                                </select>
-                            </div>
+                            <select name="payment_method" class="form-select mb-3">
+                                <option value="cod">Cash on Delivery</option>
+                                <option value="card">Credit Card</option>
+                            </select>
 
-                            <div class="mb-1">
-                                <label for="notes" class="form-label fw-semibold small">
-                                    Additional Notes <span class="text-muted fw-normal">(optional)</span>
-                                </label>
-                                <textarea id="notes" name="notes" class="form-control" rows="3"
-                                    placeholder="E.g. Leave at the door, call before delivery…"></textarea>
-                            </div>
+                            <textarea name="notes" class="form-control" rows="3" placeholder="Optional notes..."></textarea>
 
                         </div>
                     </div>
 
+                    {{-- CART DATA (IMPORTANT) --}}
+                    @foreach ($cartItems as $item)
+                        <input type="hidden" name="cart_items[{{ $loop->index }}][product_id]"
+                            value="{{ $item->product->id }}">
+
+                        <input type="hidden" name="cart_items[{{ $loop->index }}][quantity]"
+                            value="{{ $item->quantity }}">
+                    @endforeach
+
                     {{-- Submit --}}
-                    <button type="submit" class="btn btn-primary btn-lg w-100"
-                        {{ $addresses->isEmpty() ? 'disabled' : '' }}>
-                        <i class="bi bi-lock me-2"></i>Place Order
+                    <button class="btn btn-primary btn-lg w-100">
+                        Place Order
                     </button>
 
                 </form>
 
             </div>
 
-            {{-- ── Right: Order Summary ── --}}
+            {{-- RIGHT: SUMMARY --}}
             <div class="col-lg-5">
-                <div class="card border-0 shadow-sm sticky-lg-top" style="top: 100px; z-index: 1;">
+
+                <div class="card border-0 shadow-sm sticky-top" style="top: 90px;">
                     <div class="card-body p-4">
 
                         <h5 class="fw-semibold mb-3">
                             <i class="bi bi-receipt me-2 text-primary"></i>Order Summary
                         </h5>
 
-                        <ul class="list-unstyled mb-0">
-                            @foreach ($cartItems as $item)
-                                <li class="d-flex justify-content-between align-items-start mb-3">
-                                    <div>
-                                        <span class="fw-semibold small">{{ $item->product->name }}</span>
-                                        <div class="text-muted small">Qty: {{ $item->quantity }}</div>
+                        @foreach ($cartItems as $item)
+                            <div class="d-flex justify-content-between mb-3">
+
+                                <div>
+                                    <div class="fw-semibold small">
+                                        {{ $item->product->name }}
                                     </div>
-                                    <span class="fw-semibold small">
-                                        ${{ number_format($item->product->price * $item->quantity, 2) }}
-                                    </span>
-                                </li>
-                            @endforeach
-                        </ul>
+                                    <small class="text-muted">
+                                        Qty: {{ $item->quantity }}
+                                    </small>
+                                </div>
 
-                        <hr class="my-3">
+                                <div class="fw-semibold small">
+                                    ${{ number_format($item->product->price * $item->quantity, 2) }}
+                                </div>
 
-                        <div class="d-flex justify-content-between align-items-center mb-2 text-muted small">
+                            </div>
+                        @endforeach
+
+                        <hr>
+
+                        <div class="d-flex justify-content-between">
                             <span>Subtotal</span>
-                            <span>${{ number_format($total, 2) }}</span>
+                            <strong>${{ number_format($total, 2) }}</strong>
                         </div>
 
-                        <div class="d-flex justify-content-between align-items-center mb-2 text-muted small">
+                        <div class="d-flex justify-content-between text-success">
                             <span>Shipping</span>
-                            <span class="text-success">Free</span>
+                            <span>Free</span>
                         </div>
 
-                        <hr class="my-3">
+                        <hr>
 
-                        <div class="d-flex justify-content-between align-items-center fw-bold fs-5">
+                        <div class="d-flex justify-content-between fs-5 fw-bold">
                             <span>Total</span>
-                            <span class="text-primary">${{ number_format($total, 2) }}</span>
+                            <span class="text-primary">
+                                ${{ number_format($total, 2) }}
+                            </span>
                         </div>
 
                     </div>
                 </div>
+
             </div>
 
         </div>
-
     </div>
 
+    {{-- Styles --}}
     @push('styles')
         <style>
             .address-option {
-                transition: border-color 0.2s ease, background-color 0.2s ease;
                 cursor: pointer;
-            }
-
-            .address-option:has(input:checked) {
-                border-color: #4f46e5 !important;
-                background-color: #f5f3ff;
+                transition: all 0.2s ease;
             }
 
             .address-option:hover {
-                border-color: #a5b4fc;
-                background-color: #fafafa;
+                border-color: #6366f1;
+                background: #f8f9ff;
+            }
+
+            .address-option input:checked~div {
+                font-weight: 600;
             }
         </style>
     @endpush

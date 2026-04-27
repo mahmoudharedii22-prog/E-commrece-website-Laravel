@@ -15,7 +15,7 @@ Route::controller(AuthController::class)->group(function () {
     Route::get('/login', 'showLoginForm')->name('login.form');
     Route::post('/login', 'login')->name('login');
 });
-
+Route::get('/', [HomeController::class, 'index'])->name('home.index');
 Route::get('/home', [HomeController::class, 'index'])->name('home.index');
 Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
 Route::get('/categories/{category:slug}', [CategoryController::class, 'show'])->name('categories.show');
@@ -27,10 +27,11 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/cart/{product}', [CartController::class, 'addToCart'])->name('cart.store');
     Route::delete('/cart/{cart}', [CartController::class, 'removeFromCart'])->name('cart.destroy');
     Route::put('/cart/{cart}', [CartController::class, 'update'])->name('cart.update');
-    Route::get('/orders/checkout', [OrderController::class, 'checkOut'])->name('orders.checkout');
+    Route::get('/orders/checkout', [OrderController::class, 'checkout'])->name('orders.checkout');
     Route::get('/profile', [AuthController::class, 'profile'])->name('profile.show');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
     Route::post('/addresses', [AddressController::class, 'store'])->name('addresses.store');
     Route::post('/addresses/{address}/default', [AddressController::class, 'makeAsDefault'])->name('addresses.default');
+    Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
 });

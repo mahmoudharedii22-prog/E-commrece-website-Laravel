@@ -30,6 +30,7 @@ class AuthController extends Controller
                 'email' => 'The provided credentials do not match our records.',
             ]);
         }
+        request()->session()->regenerate();
 
         return $user->hasRole('admin')
             ? redirect()->route('admin.index')

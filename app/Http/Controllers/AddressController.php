@@ -14,7 +14,12 @@ class AddressController extends Controller
     public function store(CreateAddressRequest $request)
     {
         $user = Auth::user();
-        $user->addresses()->create($request->validated());
+
+        $address = $user->addresses()->create($request->validated());
+
+        if (! $user->addresses()->where('is_default', true)->exists()) {
+            $address->update(['is_default' => true]);
+        }
 
         return redirect()->route('profile.show');
     }
@@ -22,7 +27,13 @@ class AddressController extends Controller
     public function makeAsDefault(Address $address)
     {
         $this->authorize('update', $address);
-        Auth::user()->addresses()->update(['is_default' => false]);
+
+        $user = Auth::user();
+
+        $user->addresses()
+            ->where('is_default', true)
+            ->update(['is_default' => false]);
+
         $address->update(['is_default' => true]);
 
         return redirect()->route('profile.show');

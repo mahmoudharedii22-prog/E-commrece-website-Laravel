@@ -12,19 +12,23 @@ class Product extends Model
 
     protected $guarded = [];
 
-    public function category()
-    {
-        return $this->belongsTo(Category::class);
-    }
-
     public function owner()
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function orders()
+    public function category()
     {
-        return $this->belongsToMany(Order::class, 'order_products')
-            ->withPivot('quantity', 'price');
+        return $this->belongsTo(Category::class);
     }
+
+    public function orderItems()
+    {
+        return $this->hasMany(OrderProduct::class, 'product_id');
+    }
+    // public function orders()
+    // {
+    //     return $this->belongsToMany(Order::class, 'order_products')
+    //         ->withPivot('quantity', 'price');
+    // }
 }

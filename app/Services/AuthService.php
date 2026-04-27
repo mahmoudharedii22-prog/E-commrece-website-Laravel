@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class AuthService
 {
@@ -16,13 +17,13 @@ class AuthService
             return null;
         }
 
-        request()->session()->regenerate();
-
         return Auth::user();
     }
 
     public function register(array $data): User
     {
+        $data['password'] = Hash::make($data['password']);
+
         return User::create($data);
 
     }
